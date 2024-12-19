@@ -27,25 +27,24 @@
                 });
 
                 const imageUrls = await response.json();
-
+                console.log(imageUrls);
                 // 이미지 컨테이너를 비웁니다.
                 const imageContainer = document.getElementById("imageContainer");
                 imageContainer.innerHTML = "";
 
                 // 이미지 URL로 이미지 요소 생성 및 다운로드 링크 추가
-                imageUrls.forEach((url, index) => {
-                    const anchorElement = document.createElement("a");
-                    anchorElement.href = url;
-                    anchorElement.download = `image_${index + 1}.jpg`; // 다운로드 파일명 설정
-
+                 imageUrls.forEach((url, index) => {
                     const imgElement = document.createElement("img");
                     imgElement.src = url;
                     imgElement.classList.add("img-thumbnail", "m-2");
                     imgElement.style.width = "300px"; // 이미지 너비 설정
+                    imageContainer.appendChild(imgElement);
 
-                    // 클릭 시 다운로드를 위해 이미지를 링크 요소에 추가
-                    anchorElement.appendChild(imgElement);
-                    imageContainer.appendChild(anchorElement);
+                    // 클릭 이벤트 추가
+                    imgElement.addEventListener("click", () => {
+                        // Spring Boot의 엔드포인트로 요청 보내기
+                        downloadImage(url);
+                    });
                 });
             } catch (error) {
                 console.error("이미지 생성 중 오류가 발생했습니다:", error);
@@ -55,6 +54,12 @@
                 loadingAlert.style.display = "none";
             }
         }
+
+   // 이미지 다운로드 함수
+  function downloadImage(imageUrl) {
+    const downloadUrl = `/download-file?url=${encodeURIComponent(imageUrl)}`;
+    window.location.href = downloadUrl; // 브라우저에서 파일 다운로드 트리거
+  }
     </script>
 </head>
 <body>
