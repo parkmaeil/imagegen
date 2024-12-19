@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageService {
 
-    private final OpenAiImageModel openAiImageModel;
+    private final OpenAiImageModel openAiImageModel; // dall-e-2 기본 이미지 생성 모델
 
     public ImageService(OpenAiImageModel openAiImageModel) {
         this.openAiImageModel = openAiImageModel;
@@ -20,9 +20,9 @@ public class ImageService {
         ImageResponse imageResponse=openAiImageModel
                 .call(new ImagePrompt(request.getMessage(),
                         OpenAiImageOptions.builder()
-                                .withModel(request.getModel())
-                                .withQuality("hd")
-                                .withN(request.getN())
+                                .withModel(request.getModel()) // 모델설정
+                                .withQuality("hd") // 이미지 품질
+                                .withN(request.getN()) // 생성할 이미지 개수
                                 .withHeight(1024)
                                 .withWidth(1024).build())
                 );

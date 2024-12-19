@@ -22,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class FileDownloadController {
 
     private final RestTemplate restTemplate;
+
     public FileDownloadController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -31,26 +32,16 @@ public class FileDownloadController {
         try {
             // URL을 URI 객체로 변환
             URI uri = new URI(url);
-            // 요청 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.ACCEPT, MediaType.ALL_VALUE);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
 
             // RestTemplate로 요청 보내기
-            ResponseEntity<byte[]> response = restTemplate.exchange(
-                    uri, HttpMethod.GET, entity, byte[].class
-            );
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("Request failed with status code: " + response.getStatusCode());
-            }
+            ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
 
             // URL에서 파일 이름 추출
             String fileName = extractFileName(url);
 
             // 파일 다운로드용 헤더 설정
             HttpHeaders downloadHeaders = new HttpHeaders();
-            downloadHeaders.setContentType(MediaType.IMAGE_PNG);
+            downloadHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             downloadHeaders.setContentDisposition(ContentDisposition.attachment().filename(fileName).build());
 
             return new ResponseEntity<>(response.getBody(), downloadHeaders, HttpStatus.OK);
@@ -64,7 +55,7 @@ public class FileDownloadController {
     // 파일 이름 추출 메서드
     private String extractFileName(String url) {
         // URI에서 경로의 마지막 부분 추출
-        String path = URI.create(url).getPath();
+        String path = URI.create(url).getPath();  // .png?__X
         return path.substring(path.lastIndexOf("/") + 1);
     }
 }
